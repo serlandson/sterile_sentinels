@@ -1,0 +1,154 @@
+# eukaryote minion read processing steps
+# basecalling
+# demultiplexing
+# filtering - quality and length
+# trim primers
+# mapping
+Adaptors:
+TTTCTGTTGGTGCTGATATTGC
+ACTTGCCTGTCGCTCTATCTTC
+
+Eukaryote adapter+primers
+>SSU515Fngs_mostorg
+TTTCTGTTGGTGCTGATATTGCGCCAGCAACCGCGGTAA					
+>TW13_euk
+ACTTGCCTGTCGCTCTATCTTCGGTCCGTGTTTCAAGACG
+
+
+#!/bin/bash
+#SBATCH --job-name="guppy"
+#SBATCH -p gpu-low
+#SBATCH -t 2:00:00
+#SBATCH -o "guppy_basecall.out"
+#SBATCH -e "guppy_basecall.err"
+#SBATCH --open-mode "append"
+
+BASEDIR= #location of guppy container
+PROJDIR= #project directory with fastq and fast5 directories
+
+
+singularity exec --nv ${BASEDIR}/guppy_container.sif \
+guppy_basecaller --config dna_r9.4.1_450bps_hac.cfg \
+				--save_path ${PROJDIR}/fastq --input_path fast5_pass \
+				--device cuda:0,1 \
+				--records_per_fastq 0 \
+				--recursive #--resume # add when resubmitting
+
+#!/bin/bash
+#SBATCH --job-name="guppy"
+#SBATCH -p short
+#SBATCH -n 1
+#SBATCH -t 4:40:00
+#SBATCH -o "guppy_demult.out"
+#SBATCH -e "guppy_demult.err"
+#SBATCH --open-mode "append"
+
+
+singularity exec guppy_container.sif guppy_barcoder --barcode_kits EXP-PBC096 \
+                                --input_path fastq \
+                                --save_path results/barcoded \
+                                --trim_barcodes \
+                                --require_barcodes_both_ends \
+                                -t 72 \
+                                -r \
+                                -q 100000
+								
+#!/bin/bash
+#SBATCH --job-name=filt
+#SBATCH --nodes=1
+#SBATCH --time=10:00
+#SBATCH --output=filt_%a.out
+#SBATCH --error=filt_%a.err
+#SBATCH --partition short
+#SBATCH --array=1-96
+
+#Primers should cover 2500 basepairs; variation in ITS might add +-500 basepairs; Q7 will keep ~98% of reads
+task=${SLURM_ARRAY_TASK_ID}
+printf -v id "%02d" $task
+
+NanoFilt \
+        --quality 7 \
+        --length 200 \
+        --maxlength 4000 \
+        results/barcode/barcode${id}.merged.fastq > results/filter/barcode${id}.f.fastq
+		
+
+#!/bin/bash
+#SBATCH --job-name=all-euk
+#SBATCH --nodes=1
+#SBATCH --time=1:00:00
+#SBATCH --output=all-euk_%a.out
+#SBATCH --error=all-euk_%a.err
+#SBATCH --partition short
+#SBATCH --array=1-96
+
+ml load miniconda
+ml load samtools
+source activate /ampenv
+
+task=${SLURM_ARRAY_TASK_ID}
+printf -v id "%02d" $task
+
+# trim adapter+primer
+cutadapt -a ACTTGCCTGTCGCTCTATCTTCGGTCCGTGTTTCAAGACG \
+	-g TTTCTGTTGGTGCTGATATTGCGCCAGCAACCGCGGTAA \
+	-e 0.2 -m 100 --revcom \
+	-o trimmed/barcode${id}.t.fastq \
+        filtered/barcode${id}.f.fastq
+
+####################
+# minimap2
+
+mkdir minimap_Uv9_ssu-its-lsu_sr
+#UNITEv9 ssu-its-lsu
+minimap2 -ax sr sh_general_release_dynamic_all_29.11.2022.fasta \
+        trimmed/barcode${id}.t.fastq > minimap_Uv9_ssu-its-lsu_sr/barcode${id}.sam
+
+# make reads table
+# steps:
+# 1.filter to primary reads only with mapping quality > 4 and keep de tag
+# 2.get fields: queryname, flag, refname, mapq, divergence tag
+# 3.remove de:f: from divergence tag
+# 4.filter file to keep reads mapped with divergence less than 0.1
+# 5.get reference name
+# 6.sort reference name
+# 7.count unique occurences of reference name
+# 8.sort unique occurences decending
+# 9.strip any white space from the beginning of a line
+# 10. write to a file the counts of unique taxa names of mapped reads
+
+# for use in an slurm submission:
+samtools view -F 0x900 -q 4 --keep-tag de barcode{id}.sam | cut -f1,2,3,5,12 | sed 's/de:f://' | awk '$5<0.1' | cut -f3 | sort | uniq -c | sort -nr | sed 's/^[ \t]*//' > barcode{id}_uniq_taxa.tsv
+# loop for running interactively:
+for f in barcode*.sam; do samtools view -F 0x900 -q 4 --keep-tag de $f | cut -f1,2,3,5,12 | sed 's/de:f://' | awk '$5<0.1' | cut -f3 | sort | uniq -c | sort -nr | sed 's/^[ \t]*//' > ${f:0:9}_uniq_taxa.tsv; done
+
+# REMOVE EMPTY FILES
+R
+library(tidyverse)
+paths=list.files()
+samples=lapply(paths, function(x){read.table(x, sep = " ", header = F)})
+newnames=gsub("_uniq_taxa.tsv", "", paths)
+names(samples)=newnames # assign sample names
+
+alltaxa=unlist(sapply(samples, "[[", 2)) # get a vector of taxa from all df in list
+alluniq=unique(alltaxa) # get unique taxa
+
+#make new taxonomy names
+taxonomy=strsplit(alluniq, "|", fixed=T)
+taxonomy=data.frame(t(sapply(taxonomy, `[`)))
+colnames(taxonomy)=c("taxon_name", "ref_id", "sh_id", "rep","taxonomy")
+taxonomy$taxon_name_sh=paste0(taxonomy$taxon_name, "_", taxonomy$sh_id)
+
+# replace each cell in matrix with corresponding counts from sample list
+# initiate matrix, create colnames
+rval <- matrix(0L, nrow = length(samples), ncol = length(alluniq))
+ colnames(rval) <- alluniq
+# loop through samples
+ for (i in seq_along(samples)) {
+    rval[i, match(samples[[i]]$V2, colnames(rval))] <- samples[[i]]$V1
+  }
+# name rows - samples
+rownames(rval) <- names(samples)
+colnames(rval) <- taxonomy$taxon_name_sh
+write.table(rval, "euk_read_count_table_2020.tsv", quote=F, sep = "\t")
+write.table(taxonomy, "euk_taxonomy_table_2020.tsv", quote=F, sep = "\t")

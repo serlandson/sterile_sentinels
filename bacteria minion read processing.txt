@@ -1,0 +1,88 @@
+# 16S minion read processing
+# basecalling
+# demultiplexing
+# filtering - quality and length
+# trim primers
+# mapping
+# adapters+primers
+>Bac27_F
+TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG
+>Univ_1492
+ACTTGCCTGTCGCTCTATCTTCTACCTTGTTACGACTT
+
+
+# slurm sbatch script
+#!/bin/bash
+#SBATCH --job-name="guppy"
+#SBATCH -p gpu-low
+#SBATCH -t 2:00:00
+#SBATCH -o "guppy_basecall.out"
+#SBATCH -e "guppy_basecall.err"
+#SBATCH --open-mode "append"
+
+singularity exec --nv guppy_container.sif guppy_basecaller \
+--config dna_r9.4.1_450bps_hac.cfg \
+--save_path fastq \
+--input_path fast5_pass \
+--device cuda:0,1 \
+#--resume \ # add after resubmitting
+--recursive
+
+# slurm sbatch script
+#!/bin/bash
+#SBATCH --job-name="guppy"
+#SBATCH -p short
+#SBATCH -n 1
+#SBATCH -t 4:00:00
+#SBATCH -o "guppy_demult.out"
+#SBATCH -e "guppy_demult.err"
+#SBATCH --open-mode "append"
+
+singularity exec guppy_container.sif guppy_barcoder --barcode_kits EXP-PBC096 \
+                                --input_path 16S/fastq \
+                                --save_path 16S/results/barcoded \
+                                --require_barcodes_both_ends \
+                                --trim_barcodes \
+                                -t 72 \
+                                -r \
+                                -q 100000
+								
+
+# slurm sbatch script								
+#!/bin/bash
+#SBATCH --job-name=emu-16S
+#SBATCH --nodes=1
+#SBATCH --time=1:00:00
+#SBATCH --output=emu-16S_%a.out
+#SBATCH --error=emu-16S_%a.err
+#SBATCH --partition short
+#SBATCH --array=1-96
+
+#ml load python_3/3.6
+#ml load miniconda
+
+
+task=${SLURM_ARRAY_TASK_ID}
+printf -v id "%02d" $task
+
+NanoFilt \
+        --quality 12 \
+        --length 1000 \
+        --maxlength 1700 \
+        barcoded/barcode${id}/*.fastq > filter/barcode${id}.f.fastq
+
+# run cutadapt to remove primers - the barcodes have already been removed by guppy - and reads quality and length filtered with NanoFilt
+cutadapt \
+        -g AGRGTTYGATYMTGGCTCAG -a TACCTTGTTACGACTT \
+        --rc -e 0.15 -m 1000 -o trim/barcode${id}.t.fastq \
+        filter/barcode${id}.f.fastq
+
+
+emu abundance --type sr \
+        --db emu/default_16S \
+        --N 50 \
+        --output-dir results/emu_sr_output/ \
+        --threads 8 \
+        --keep-files \
+        --keep-counts \
+        results/trim/barcode${id}.t.fastq

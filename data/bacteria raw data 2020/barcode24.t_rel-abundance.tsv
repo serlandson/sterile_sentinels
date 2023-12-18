@@ -1,0 +1,4 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+274	0.2608695652173913	Thermus thermophilus	Thermus	Thermaceae	Thermales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				12.26086956521739
+456163	0.7391304347826086	Thermus parvatiensis	Thermus	Thermaceae	Thermales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				34.73913043478261
+unassigned	0.0												0.0

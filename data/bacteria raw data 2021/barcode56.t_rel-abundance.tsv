@@ -1,0 +1,155 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1707785	0.25441567853420255	Massilia sp. WG5	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				3803.514394086328
+502333	0.009213603816208634	Ramlibacter ginsenosidimutans	Ramlibacter	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				137.7433770523191
+1811225	0.002221235168528819	Massilia solisilvae	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				33.207465769505845
+1128670	0.002127989481814733	Microvirga makkahensis	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				31.813442753130257
+1777134	0.018308008639347114	Caballeronia turbans	Caballeronia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				273.70472915823933
+2072590	0.012491973561299642	Massilia armeniaca	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				186.75500474142964
+354356	0.0021325105845404696	Niastella koreensis	Niastella	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				31.881033238880022
+398037	0.02054360201003723	Segetibacter koreensis	Segetibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				307.1268500500566
+61624	0.0014438605048170301	Paenibacillus mucilaginosus	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				21.5857145470146
+2045208	0.008908265428629594	Massilia violaceinigra	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				133.17856815801244
+1141883	0.15895125565119886	Massilia putida	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				2376.3212719854228
+2675388	0.0019733293470214014	Flavisolibacter galbus	Flavisolibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				29.501273737969953
+549	0.004091502546587733	Pantoea agglomerans	Pantoea	Erwiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Pantoea agglomerans group	61.167963071486604
+1777141	0.0011721543430049843	Caballeronia pedi	Caballeronia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.523707427924517
+321983	0.020514607790024095	Massilia albidiflava	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				306.6933864608602
+945844	0.0034743245363846754	Massilia oculi	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				51.9411518189509
+453817	0.012347251426829683	Massilia aerilata	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				184.59140883110376
+544911	0.004176929730804209	Massilia niastensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				62.44509947552292
+670293	0.042756925512194364	Segetibacter aerophilus	Segetibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				639.2160364073058
+1064516	0.01040191548807277	Noviherbaspirillum canariense	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				155.50863654668794
+648895	0.013918401649301498	Massilia suwonensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				208.0801046570574
+1811226	0.011271041856627443	Massilia agilis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				168.50207575658027
+1886785	0.012544305390680431	Massilia agri	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				187.53736559067244
+544910	0.004344051683940296	Massilia niabensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				64.94357267490741
+1805474	0.0019093697447287972	Bacillus mediterraneensis	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				28.545077683695517
+863372	0.001248169020229026	Herbaspirillum huttiense	Herbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				18.66012685242394
+2603856	0.005149799379828683	Lacisediminimonas profundi	Lacisediminimonas	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				76.98950072843881
+2039631	0.008423956708021532	Ramlibacter alkalitolerans	Ramlibacter	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				125.9381527849219
+198620	0.0014681336221695953	Pseudomonas koreensis	Pseudomonas	Pseudomonadaceae	Pseudomonadales	Gammaproteobacteria	Proteobacteria		Bacteria				21.94859765143545
+106590	0.012125399321532499	Cupriavidus necator	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				181.27471985691085
+1465823	0.002717800906386543	Noviherbaspirillum massiliense	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				40.63112355047882
+1822381	0.005412543790746154	Massilia chloroacetimidivorans	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				80.917529671655
+442526	0.02737414762679943	Massilia brevitalea	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				409.24350702065146
+1926872	0.015511223210026707	Ramlibacter monticola	Ramlibacter	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				231.89278698989926
+340097	0.0022036160614394883	Tuberibacillus calidus	Tuberibacillus	Sporolactobacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				32.94406011852035
+47885	0.0009631372250814588	Pseudomonas oryzihabitans	Pseudomonas	Pseudomonadaceae	Pseudomonadales	Gammaproteobacteria	Proteobacteria		Bacteria			Pseudomonas putida group	14.39890151496781
+134536	0.0023526062908431353	Paraburkholderia caledonica	Paraburkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				35.17146404810487
+964	0.006000876123473308	Herbaspirillum seropedicae	Herbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				89.71309804592595
+1294048	0.0010273765054821943	Psychroglaciecola arctica	Psychroglaciecola	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				15.359278756958805
+1772194	0.007878585288946882	Massilia pinisoli	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				117.78485006975589
+2086471	0.008891116651490023	Adhaeribacter swui	Adhaeribacter	Hymenobacteraceae	Cytophagales	Cytophagia	Bacteroidetes	FCB group	Bacteria				132.92219393977584
+47229	0.003768709852930389	Massilia timonae	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				56.34221230130932
+864828	0.01520822142617108	Massilia umbonata	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				227.36291032125766
+1678028	0.0018874221273208812	Massilia sp. NR 4-1	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				28.216960803447172
+2495582	0.001123923304400892	Paenibacillus albus	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				16.802653400793336
+1260987	0.001504388583136858	Noviherbaspirillum malthae	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				22.490609317896027
+361575	0.003613714248107135	Pseudarthrobacter phenanthrenivorans	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				54.02502800920167
+1164594	0.0018041225618530827	Massilia yuzhufengensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				26.971632299703586
+796007	0.004620505152442416	Massilia tieshanensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				69.07655202901412
+151783	0.004706262479726433	Cupriavidus campinensis	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				70.35862407191017
+60548	0.001248592331706716	Paraburkholderia graminis	Paraburkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				18.666455359015405
+96344	0.003547902358933319	Cupriavidus oxalaticus	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				53.04114026605312
+1224511	0.009426832150937816	Noviherbaspirillum suwonense	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				140.93114065652034
+121292	0.0012891991007995735	Pseudarthrobacter sulfonivorans	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				19.273526556953623
+373040	0.0041021740096301934	Massilia aurea	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				61.32750144397139
+94132	0.003824583393566091	Ramlibacter tataouinensis	Ramlibacter	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				57.17752173381306
+2035	0.005246626369377076	Curtobacterium flaccumfaciens	Curtobacterium	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				78.43706422218729
+29443	0.0019357848165159433	Paucimonas lemoignei	Paucimonas	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				28.93998300691335
+1536707	0.007258639494644044	Massilia arvi	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				108.51666044492846
+2026176	0.002815927324585828	Massilia phosphatilytica	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				42.09811350255813
+861266	0.0020199979007543335	Pseudarthrobacter siccitolerans	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				30.198968616277284
+742054	0.002381634891979842	Paenibacillus sacheonensis	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				35.605441635098636
+1064517	0.0061781954015444965	Noviherbaspirillum aurantiacum	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				92.36402125309023
+106592	0.0033147903345335647	Ensifer adhaerens	Ensifer	Rhizobiaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				49.55611550127679
+758793	0.0011428777788635549	Burkholderia insecticola	Burkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.086022794010145
+93220	0.0018942036481495853	Pandoraea pnomenusa	Pandoraea	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				28.3183445398363
+1303090	0.0025828900273590226	Massilia kyonggiensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				38.614205909017386
+286638	0.001142202921987053	Massilia alkalitolerans	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.07593368370644
+363849	0.0017782009392807595	Pedobacter panaciterrae	Pedobacter	Sphingobacteriaceae	Sphingobacteriales	Sphingobacteriia	Bacteroidetes	FCB group	Bacteria				26.584104042247354
+2518599	0.00337700316397449	Pandoraea sp. XY-2	Pandoraea	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				50.48619730141863
+666686	0.0012797996700434874	Bacillus sp. 1NLA3E	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				19.133005067150137
+1882682	0.0018519720642105211	Microvirga ossetica	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				27.68698235994729
+2600159	0.0010594549639601476	Arthrobacter sp. UKPF54-2	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				15.838851711204207
+573739	0.00139503324249558	Oxalicibacterium horti	Oxalicibacterium	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				20.85574697530892
+44253	0.0014518034804117056	Paenibacillus validus	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				21.704462032155
+285983	0.0011893047609808046	Mesobacillus subterraneus	Mesobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				17.78010617666303
+82633	0.0018342863781584608	Cupriavidus pauculus	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				27.42258135346899
+2590774	0.004961129303373522	Pseudarthrobacter sp. NIBRBAC000502771	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				74.16888308543416
+648894	0.0037308040516945526	Massilia jejuensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				55.775520572833564
+1402137	0.0012439997034982754	Microvirga zambiensis	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				18.59779556729922
+55508	0.0026361172555477994	Janthinobacterium agaricidamnosum	Janthinobacterium	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				39.4099529704396
+871742	0.0030186732712684564	Massilia flava	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				45.129165405463425
+670292	0.0022582426204829356	Microvirga aerilata	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				33.76072717621989
+1035707	0.0019084016829787034	Massilia namucuonensis	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				28.530605160531618
+2033	0.0033062651913303223	Microbacterium testaceum	Microbacterium	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				49.42866461038832
+1665	0.0020529288730609854	Arthrobacter globiformis	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				30.69128665226173
+1064518	0.010341885666706352	Noviherbaspirillum soli	Noviherbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				154.61119071725997
+1404	0.003484454689404654	Bacillus megaterium	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				52.09259760659958
+864069	0.004967158109723642	Microvirga lotononidis	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				74.25901374036845
+394096	0.0011025391571824292	Hyalangium minutum	Hyalangium	Archangiaceae	Myxococcales	Deltaproteobacteria	Proteobacteria		Bacteria				16.482960399877317
+246602	0.0011795188725487876	Pseudoduganella violaceinigra	Pseudoduganella	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.633807144604376
+410837	0.002635143120803787	Pseudarthrobacter defluvii	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				39.39538965601662
+203799	0.0010573414546242359	Nocardioides aquiterrae	Nocardioides	Nocardioidaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				15.807254746632326
+502330	0.0010315049715483107	Mucilaginibacter hankyongensis	Mucilaginibacter	Sphingobacteriaceae	Sphingobacteriales	Sphingobacteriia	Bacteroidetes	FCB group	Bacteria				15.420999324647244
+294	0.0015278754608468934	Pseudomonas fluorescens	Pseudomonas	Pseudomonadaceae	Pseudomonadales	Gammaproteobacteria	Proteobacteria		Bacteria			Pseudomonas fluorescens group	22.841738139661057
+2578107	0.0009548369141664977	Arthrobacter sp. KBS0702	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				14.274811866789141
+324057	0.0010194996991541002	Paenibacillus sp. JDR-2	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				15.241520502353797
+169427	0.0008632090353024698	Paraburkholderia terricola	Paraburkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				12.904975077771924
+2078013	0.0014918189489525919	Microvirga calopogonii	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				22.302693286841247
+1225564	0.0011679103892759102	Microvirga vignae	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				17.46026031967486
+2025949	0.0012486228253678583	Herbaspirillum sp. meg3	Herbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				18.66691123924948
+80842	0.0009630080696701413	Herbaspirillum rubrisubalbicans	Herbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				14.396970641568613
+220684	0.0010367586821527315	Neobacillus drentensis	Neobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				15.499542298183336
+85085	0.0018332864153174449	Pseudarthrobacter chlorophenolicus	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				27.4076319089958
+1575	0.0019833486232740303	Leifsonia xyli	Leifsonia	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				29.651061917946752
+1776165	0.0016960831246192708	Pseudoduganella eburnea	Pseudoduganella	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				25.356442713058097
+2575374	0.0017512231674891754	Arthrobacter sp. 24S4-2	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				26.18078635396317
+2497863	0.00116607195380917	Janthinobacterium sp. 17J80-10	Janthinobacterium	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.432775709447093
+354355	0.002070990508609321	Niastella yeongjuensis	Niastella	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				30.961308103709346
+1492898	0.002241380441384686	Flavisolibacter tropicus	Flavisolibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				33.50863759870106
+321984	0.005561605352688651	Massilia plicata	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				83.14600002269533
+424798	0.0016209170660449763	Rhizobium soli	Rhizobium	Rhizobiaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				24.232710137372397
+1811224	0.003045486190343744	Massilia terrae	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				45.53001854563897
+470934	0.0023373521251249417	Pantoea vagans	Pantoea	Erwiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				34.94341427061788
+248026	0.002782053277618826	Cupriavidus pinatubonensis	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				41.59169650040145
+661481	0.0013467809458250059	Flavisolibacter ginsenosidimutans	Flavisolibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				20.134375140083836
+346179	0.0018362110975961663	Herbaspirillum rhizosphaerae	Herbaspirillum	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				27.451355909062688
+220685	0.000954684992325054	Neobacillus bataviensis	Neobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				14.272540635259556
+2100740	0.0013220952064231027	Pedobacter mongoliensis	Pedobacter	Sphingobacteriaceae	Sphingobacteriales	Sphingobacteriia	Bacteroidetes	FCB group	Bacteria				19.765323336025386
+29320	0.0009748242906759237	Paenarthrobacter nicotinovorans	Paenarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				14.573623145605058
+1703345	0.0009510078273755299	Niastella vici	Niastella	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				14.217567019264171
+28454	0.0011742081872625917	Sphingobacterium multivorum	Sphingobacterium	Sphingobacteriaceae	Sphingobacteriales	Sphingobacteriia	Bacteroidetes	FCB group	Bacteria				17.554412399575746
+93218	0.0018868446591939283	Pandoraea apista	Pandoraea	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				28.20832765494923
+1396	0.0008659304213813314	Bacillus cereus	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria			Bacillus cereus group	12.945659799650905
+1648232	0.001035051815035373	Skermanella rubra	Skermanella	Rhodospirillaceae	Rhodospirillales	Alphaproteobacteria	Proteobacteria		Bacteria				15.474024634778825
+2079227	0.00152351575598345	Arthrobacter sp. PGP41	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				22.776560551952578
+592317	0.0015404800892479223	[Empedobacter] haloabium	Empedobacter	Weeksellaceae	Flavobacteriales	Flavobacteriia	Bacteroidetes	FCB group	Bacteria				23.03017733425644
+186651	0.0014703580274877553	Microvirga subterranea	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				21.98185251094194
+1854496	0.0013711732863596934	Microvirga soli	Microvirga	Methylobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				20.499040631077417
+990371	0.0016906944956644318	Daejeonella rubra	Daejeonella	Sphingobacteriaceae	Sphingobacteriales	Sphingobacteriia	Bacteroidetes	FCB group	Bacteria				25.275882710183254
+1357915	0.0022176409922094807	Arthrobacter sp. QXT-31	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				33.153732833531734
+340221	0.001028263598550105	Alsobacter metallidurans	Alsobacter		Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				15.37254079832407
+1906742	0.002367724421119934	Microbacterium sp. BH-3-3-3	Microbacterium	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				35.39748009574301
+1777144	0.0009548539098639621	Caballeronia ptereochthonis	Caballeronia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				14.275065952466234
+2590785	0.0025168305237888745	Pseudarthrobacter sp. NIBRBAC000502770	Pseudarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				37.62661633064367
+279058	0.0009546461707600494	Collimonas arenae	Collimonas	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				14.271960252862739
+554312	0.001671703335193094	Paenibacillus rigui	Paenibacillus	Paenibacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				24.991964861136758
+164546	0.0022768586517294864	Cupriavidus taiwanensis	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				34.039036843355824
+292	0.0007348226271886216	Burkholderia cepacia	Burkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria			Burkholderia cepacia complex	10.985598276469892
+400774	0.0012840445801961975	Nocardioides panacihumi	Nocardioides	Nocardioidaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				19.196466473933153
+1588021	0.0009555012122915232	Arthrobacter sp. Hiyo4	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				14.284743123758272
+119219	0.0009548200292217048	Cupriavidus metallidurans	Cupriavidus	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				14.274559436864488
+211146	0.0016893135330435713	Paenarthrobacter nitroguajacolicus	Paenarthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				25.25523731900139
+398045	0.001312286283443776	Flavisolibacter ginsengiterrae	Flavisolibacter	Chitinophagaceae	Chitinophagales	Chitinophagia	Bacteroidetes	FCB group	Bacteria				19.61867993748445
+1864509	0.0007909386495547877	Rhizobium altiplani	Rhizobium	Rhizobiaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				11.824532810844076
+321982	0.0009730273395678923	Massilia dura	Massilia	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				14.54675872653999
+131568	0.0010189376380316311	Kineococcus radiotolerans	Kineococcus	Kineosporiaceae	Kineosporiales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				15.233117688572886
+1581172	0.001375697145276077	Arthrobacter pokkalii	Arthrobacter	Micrococcaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				20.56667232187735
+279826	0.0021513590246174863	Mesobacillus foraminis	Mesobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				32.162817418031416
+169430	0.0011718121516917299	Paraburkholderia hospita	Paraburkholderia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				17.518591667791362
+1644131	0.0012365025096266536	Janthinobacterium sp. 1_2014MBL_MicDiv	Janthinobacterium	Oxalobacteraceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				18.485712518918472
+1399969	0.0010258106817448687	Caballeronia megalochromosomata	Caballeronia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				15.335869692085787
+367474	0.0009035328116630284	Caenimonas koreensis	Caenimonas	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				13.507815534362274
+unassigned	0.0												0.0

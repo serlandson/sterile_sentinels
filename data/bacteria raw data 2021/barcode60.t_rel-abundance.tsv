@@ -1,0 +1,5 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+52022	0.926829268292683	Meiothermus silvanus	Meiothermus	Thermaceae	Thermales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				38.0
+456163	0.04878048780487805	Thermus parvatiensis	Thermus	Thermaceae	Thermales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				2.0
+274	0.024390243902439025	Thermus thermophilus	Thermus	Thermaceae	Thermales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				1.0
+unassigned	0.0												0.0

@@ -1,0 +1,495 @@
+---
+title: "Fungi 2020 Sterile Sentinels"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/sonya.erlandson/OneDrive - USDA/files to save/sterile sentinels/sr analysis")
+```
+
+## Load data
+```{r}
+# 2020 Fungi
+comm <- read.csv("data tables/mm_Uv9_ssu-its-lsu_SR_counts_table_FUNGI_2020.csv", header = TRUE, row.names = 1, check.names = F)
+tax <- read.csv("data tables/mm_Uv9_ssu-its-lsu_SR_taxonomy_FUNGI_2020.csv", header = TRUE)
+samples <- read.csv("data tables/its_sample_data_2020.csv")
+leco <- readxl::read_xlsx("data tables/Alt Rotation Sentinel Soil 2020-2022.xlsx")
+
+leco <- leco[leco$Year ==2020, ]
+```
+
+# Load R libraries and custom functions
+```{r}
+library(vegan)
+library(tidyverse)
+library(knitr)
+library(ALDEx2)
+
+
+source("r scripts/subset_samples_community_table.R")
+source("r scripts/permANOVA_functions.R")
+
+
+aggregateTaxonomy <- function(community, taxonomy, agglevel){
+  commtranspose <- as.data.frame(t(community))
+  whichlevel <- which(colnames(tax) == agglevel)
+  commagg <- aggregate(commtranspose, by = list(tax[, whichlevel]), FUN = sum)
+  # rowSums(commagg[,-1])
+  # commagg <- commagg[-1, ]
+  row.names(commagg) <- commagg$Group.1 # new row names of genera
+  commagg <- commagg[, -1] # remove grouping variable
+  commagg <- as.data.frame(t(commagg))
+}
+
+#subset community, samples, taxonomy. need subset r script
+rotation_ttests <- function(comm, samples, type=NULL, time=NULL, test_name){
+  test <- comm_subset(comm, samples, type, time) # subset community
+  testsamp <- sample_subset(samples, type, time) # subset samples
+  # aldex t-test
+  aldextest <- ALDEx2::aldex(reads = t(test), conditions = testsamp$rotation, test = "t", effect = TRUE, mc.samples = 128)
+  # add sample data and test information
+  aldextest$type <- rep(test_name, length(aldextest$rab.all))
+  aldextest$species <- row.names(aldextest)
+  return(aldextest)
+  
+}
+
+type_ttest <- function(comm, samples, time=NULL, test_name){
+  test <- comm_subset(comm, samples, which_time =  time) # subset community
+  testsamp <- sample_subset(samples,  which_time = time) # subset samples
+  # aldex t-test
+  aldextest <- ALDEx2::aldex(reads = t(test), conditions = testsamp$type, test = "t", effect = TRUE, mc.samples = 128)
+  # add sample data and test information
+  aldextest$type <- rep(test_name, length(aldextest$rab.all))
+  aldextest$species <- row.names(aldextest)
+  return(aldextest)
+  
+}
+
+```
+
+
+#Soil chemistry and nutrients
+permanova - not significant
+```{r}
+# need to aggregate community or expand soil data
+bulk <- comm_subset(comm, samples, "bulk")
+bulksamp <- sample_subset(samples, "bulk")
+
+bulk <- bulk[order(bulksamp$plot), ]
+bulksamp <- bulksamp[order(bulksamp$plot), ]
+
+lecorep <- leco[match(bulksamp$plot, leco$Plot), ]
+
+# need to standardize the soil variables.
+lecostd <- leco[ ,c(7,8,11:18)]
+lecostd <- data.frame(scale(lecostd))
+
+soilpermanova <- adonis2(decostand(bulk[bulksamp$time==0, ]+1, method = "clr")~PctN+PctC+pH+SWC_g.drygsoil+NH4N_mg.kg+P.Bray_mg.kg, data=lecostd, method = "euclid", by = "margin")
+
+soilpermanova
+
+
+soilrda <- rda(decostand(bulk[bulksamp$time==0, ]+1, method = "clr")~PctN+PctC+pH+SWC_g.drygsoil+NH4N_mg.kg+P.Bray_mg.kg, data=lecostd, method = "euclid")
+plot(soilrda)
+anova(soilrda)
+
+
+soilmoisturepermanova <- adonis2(decostand(comm+1, method = "clr")~samples$percent_wc+samples$type+samples$rotation, method = "euclid")
+soilmoisturepermanova
+```
+
+# Statistical power
+adonis r2 - cropping system at each time point
+power of sentinels vs bulk and incubation time will be determined in another script with all four datasets
+```{r, echo=FALSE}
+
+bulkanova <- adonis2(decostand(comm_subset(comm+1, samples, "bulk"), method = "clr") ~ rotation, data = sample_subset(samples, "bulk"), method = "euclid", by = "terms")
+
+baganova <- adonis2(decostand(comm_subset(comm+1, samples, "bag"), method = "clr")  ~ week + rotation, data = sample_subset(samples, "bag"), method = "euclid", by = "terms")
+
+# for each time point:
+bulkpermanovas <- bulkANOVAs(comm, samples)
+bagpermanovas <- bagANOVAs(comm, samples)
+
+allpermanovas <- rbind(bulkpermanovas, bagpermanovas)
+
+write.csv(allpermanovas, "fungi_2020_adonis_results.csv")
+```
+
+total dna, will be determined in another script with all four datasets
+diversity too.
+#Differential Abundance
+###sentinels vs bulk soil
+```{r, message=F, include=F}
+allweeks <- rbind(type_ttest(comm, samples, time = 1, "week_1"),
+                  type_ttest(comm, samples, time = 2, "week_2"),
+                  type_ttest(comm, samples, time = 3, "week_3"),
+                  type_ttest(comm, samples, time = 4, "week_4"),
+                  type_ttest(comm, samples, time = 5, "week_5"))
+
+
+allweeks$amplicon <- rep ("fungi_2020", length(allweeks$rab.all))
+
+
+```
+
+#####traits
+```{r, message=F, include=F}
+taxsub <- tax[!is.na(tax$primary_lifestyle), ] # subset to taxa with traits defined
+commsub <- comm[ ,colnames(comm) %in% taxsub$taxon_name_sh] #subset community to taxa with traits
+commagg <- as.data.frame(t(commsub)) # transpose dataframe for aggregating by trait
+aggcomm <- aggregate(commagg, by=list(taxsub$primary_lifestyle), FUN=sum) # aggregate by trait
+row.names(aggcomm)<- aggcomm$Group.1 # make traits row.names
+aggcomm <- aggcomm[ , -1] # remove group
+traitcomm <- as.data.frame(t(aggcomm)) # transpose again
+
+allweeks.traits <- rbind(type_ttest(traitcomm, samples, time = 1, "week_1"),
+                  type_ttest(traitcomm, samples, time = 2, "week_2"),
+                  type_ttest(traitcomm, samples, time = 3, "week_3"),
+                  type_ttest(traitcomm, samples, time = 4, "week_4"),
+                  type_ttest(traitcomm, samples, time = 5, "week_5"))
+
+
+allweeks.traits$amplicon <- rep ("fungi_2020", length(allweeks.traits$rab.all))
+
+# check if traits are more diverse in high diversity rotation
+# 
+row.names(traitcomm)== samples$fungi_barcode
+```
+
+##cropping system
+####sentinels + traits
+```{r, message=F, include=F}
+# aggregate taxonomic level
+summary(colnames(comm) == tax$taxon_name_sh)
+genuscomm <- aggregateTaxonomy(comm, tax, "genus")
+
+bag.rot <- rbind(rotation_ttests(comm, samples, type = "bag", time = 1, "bag_1"),
+              rotation_ttests(comm, samples, type = "bag", time = 2, "bag_2"),
+              rotation_ttests(comm, samples, type = "bag", time = 3, "bag_3"),
+              rotation_ttests(comm, samples, type = "bag", time = 4, "bag_4"),
+              rotation_ttests(comm, samples, type = "bag", time = 5, "bag_5"))
+
+
+genusbag <- rbind(rotation_ttests(genuscomm, samples, type = "bag", time = 1, "bag_1"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 2, "bag_2"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 3, "bag_3"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 4, "bag_4"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 5, "bag_5"))
+
+bag.traits <- rbind(rotation_ttests(traitcomm, samples, type = "bag", time = 1, "bag_1"),
+              rotation_ttests(traitcomm, samples, type = "bag", time = 2, "bag_2"),
+              rotation_ttests(traitcomm, samples, type = "bag", time = 3, "bag_3"),
+              rotation_ttests(traitcomm, samples, type = "bag", time = 4, "bag_4"),
+              rotation_ttests(traitcomm, samples, type = "bag", time = 5, "bag_5"))
+
+
+```
+
+###bulk soil + traits
+```{r, echo=FALSE,message=F, include=F}
+
+bulk.rot <- rbind(rotation_ttests(comm, samples, type = "bulk", time = 0, "bulk_0"),
+              rotation_ttests(comm, samples, type = "bulk", time = 1, "bulk_1"),
+              rotation_ttests(comm, samples, type = "bulk", time = 2, "bulk_2"),
+              rotation_ttests(comm, samples, type = "bulk", time = 3, "bulk_3"),
+              rotation_ttests(comm, samples, type = "bulk", time = 4, "bulk_4"),
+              rotation_ttests(comm, samples, type = "bulk", time = 5, "bulk_5"))
+
+
+genusbulk <- rbind(rotation_ttests(genuscomm, samples, type = "bulk", time = 0, "bulk_0"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 1, "bulk_1"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 2, "bulk_2"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 3, "bulk_3"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 4, "bulk_4"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 5, "bulk_5"))
+
+
+bulk.traits <- rbind(rotation_ttests(traitcomm, samples, type = "bulk", time = 0, "bulk_0"),
+              rotation_ttests(traitcomm, samples, type = "bulk", time = 1, "bulk_1"),
+              rotation_ttests(traitcomm, samples, type = "bulk", time = 2, "bulk_2"),
+              rotation_ttests(traitcomm, samples, type = "bulk", time = 3, "bulk_3"),
+              rotation_ttests(traitcomm, samples, type = "bulk", time = 4, "bulk_4"),
+              rotation_ttests(traitcomm, samples, type = "bulk", time = 5, "bulk_5"))
+```
+
+### diff abund summary
+```{r}
+rotationtests <- rbind(bag.rot,bulk.rot)
+rotationfilt <- rotationtests[abs(rotationtests$effect)>1, ]
+length(unique(rotationfilt$species))
+
+genusrotationtests <- rbind(genusbag,genusbulk)
+traittests <- rbind(bag.traits, bulk.traits)
+# assign guilds
+rotationfilt$primary_lifestyle <- tax$primary_lifestyle[match(rotationfilt$species, tax$taxon_name_sh)]
+rotationfilt$secondary_lifestyle <- tax$secondary_lifestyle[match(rotationfilt$species, tax$taxon_name_sh)]
+
+cstaxa <- rotationfilt[rotationfilt$effect < 0, ]
+csswptaxa <- rotationfilt[rotationfilt$effect > 0, ]
+
+
+bagtraits <- allweeks.traits[allweeks.traits$effect<-1, ]
+bulktraits <- allweeks.traits[allweeks.traits$effect>1, ]
+
+write.csv(rotationtests, "fungi_2020_rotation_ttests_species.csv", quote = F)
+write.csv(genusrotationtests, "fungi_2020_rotation_ttests_genus.csv", quote = F)
+write.csv(allweeks, "fungi_2020_type_ttests_species.csv", quote = F)
+write.csv(allweeks.traits, "fungi_2020_type_traits.csv", quote = F)
+write.csv(traittests, "fungi_2020_rotation_traits.csv", quote = F)
+```
+
+#Diversity and Richness
+```{r}
+library(hillR)
+#stats
+summary(row.names(comm)==samples$fungi_barcode)
+samples$week_int <- samples$week
+samples$lib_size <- rowSums(comm)
+
+calculate_diversity <- function(comm, samples){
+  shannon <- diversity(comm, "shannon")
+  hillq0 <- hill_taxa(comm, q=0, MARGIN = 1)
+  # get rarefied estimates
+  rar <- rrarefy(comm, sample = min(rowSums(comm)))
+  rar.alpha <- specnumber(rar)
+  rar.shannon <- diversity(rar, "shannon")
+  rar.hillq0 <- hill_taxa(rar, q=0, MARGIN = 1)
+  rar.hillq1 <- hill_taxa(rar, q=1, MARGIN = 1)
+  rar.hillq2 <- hill_taxa(rar, q=2, MARGIN = 1)
+  #add to sample data
+  samples$shannon <- shannon
+  samples$hill <- hillq0
+  samples$rar.alpha <- rar.alpha
+  samples$rar.shannon <- rar.shannon
+  samples$rar.hillq0 <- rar.hillq0
+  samples$rar.hillq1 <- rar.hillq1
+  samples$rar.hillq2 <- rar.hillq2
+  return(samples)
+}
+
+div.df <- calculate_diversity(comm, samples = samples)
+
+bagdiv <- div.df[div.df$type == "bag", ]
+bulkdiv <- div.df[div.df$type == "bulk", ]
+
+
+ggplot(div.df)+
+  geom_point(aes(x = week_int, y = rar.alpha, color = rotation), size = 3)+
+  theme_minimal()+
+  scale_color_manual(values = c("skyblue", "hotpink"))+
+  labs(y = "rarefied species richness",x = "week sampled")+
+  facet_grid(cols = vars(type))
+  # stat_smooth(aes(x = week_int, y = DNA_ng.ul), method="lm", se=TRUE, fill=NA,
+  #             formula=y ~ exp(-x), colour="gray")
+
+  
+t.test(bagdiv$rar.alpha ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.hillq1 ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.shannon ~ as.numeric(as.factor(bagdiv$rotation)))
+
+t.test(bulkdiv$rar.alpha ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.hillq1 ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.shannon ~ as.numeric(as.factor(bulkdiv$rotation)))
+
+weeksubset0 <- bulkdiv[bulkdiv$time == t, ]
+t.test(rar.hillq1 ~ rotation, data = weeksubset0)
+
+alphadivtests <- list()
+for(t in 1:5){
+  print(paste("testing week", t))
+  weeksubset <- bagdiv[bagdiv$time == t, ]
+  test.res <- t.test(rar.hillq1 ~ rotation, data = weeksubset)
+  alphadivtests[[t]] <- test.res
+}
+
+alphadivtests[[1]]
+alphadivtests[[2]]
+alphadivtests[[3]]
+alphadivtests[[4]]
+alphadivtests[[5]]
+# hill q = 1
+# no significant differences between each time point for bulk
+# effective diversity is higher in CS at time 1 in sentinel soil.
+
+
+
+# richness:
+# no significant differences between each time point for sentinels or bulk
+
+
+
+mean(bagdiv$rar.alpha[bagdiv$rotation == "CS"])
+mean(bagdiv$rar.alpha[bagdiv$rotation == "CSSwP"])
+
+sd(bagdiv$rar.alpha[bagdiv$rotation == "CS"])
+sd(bagdiv$rar.alpha[bagdiv$rotation == "CSSwP"])
+
+mean(bagdiv$rar.hillq1[bagdiv$rotation == "CS"])
+mean(bagdiv$rar.hillq1[bagdiv$rotation == "CSSwP"])
+
+sd(bagdiv$rar.hillq1[bagdiv$rotation == "CS"])
+sd(bagdiv$rar.hillq1[bagdiv$rotation == "CSSwP"])
+
+#####################################
+
+mean(bulkdiv$rar.alpha[bulkdiv$rotation == "CS"])
+mean(bulkdiv$rar.alpha[bulkdiv$rotation == "CSSwP"])
+
+sd(bulkdiv$rar.alpha[bulkdiv$rotation == "CS"])
+sd(bulkdiv$rar.alpha[bulkdiv$rotation == "CSSwP"])
+
+
+mean(bulkdiv$rar.hillq1[bulkdiv$rotation == "CS"])
+mean(bulkdiv$rar.hillq1[bulkdiv$rotation == "CSSwP"])
+
+sd(bulkdiv$rar.hillq1[bulkdiv$rotation == "CS"])
+sd(bulkdiv$rar.hillq1[bulkdiv$rotation == "CSSwP"])
+
+```
+
+
+# Overall RDA
+```{r}
+commclr <- decostand(comm+1, method = "clr")
+allrda <- rda(commclr ~ type + week + rotation, data = samples)
+summary(allrda)
+anova(allrda, by = "margin")
+anova(allrda, by = "axis")
+
+# get taxa to plot
+source("r scripts/RDA outlier functions.R")
+adaptive <- rdadapt(allrda, 3) # finds taxa that contribute most to each axis, returns a list of pvalues
+
+# get taxa that contribute most to each axis
+taxadf <- scores(allrda, scaling = 2)$species
+taxadf <- cbind(taxadf, adaptive)
+taxadf$spplabels <- sapply(strsplit(rownames(taxadf), "_"), "[[", 1)
+# filter to just smallest qvalues
+taxadf.filt <- taxadf[order(taxadf$q.values),]
+taxadf.filt <- taxadf.filt[1:20,]
+
+rdaplot <- ggplot()+
+    geom_point(aes(scores(allrda, scaling = 2)$sites[,1], # site points
+                   scores(allrda, scaling = 2)$sites[,2], 
+                   shape = samples$rotation, 
+                   color = as.factor(samples$week)), 
+               size = 4)+
+    # geom_point(aes(scores(allrda, scaling = 2)$species[,1], # species points
+    #                  scores(allrda, scaling = 2)$species[,2]), 
+    #              alpha = 1/10, color = "gray25", size = 1)+
+    # geom_text_repel(aes(x = taxadf.filt[ ,1], # species labels
+    #               y = taxadf.filt[ ,2],
+    #               label = taxadf.filt$spplabels),max.overlaps = 30,
+    #           size = 3, color = "gray25", fontface="italic")+
+    geom_text(aes(x = c(1.73, -1.85, -0.08, 0.08), # centroid labels
+                  y = scores(allrda, scaling = 2)$centroids[ ,2],
+                  label = c("sentinel", "bulk", "CS", "CSSwP")),
+              size = 4, fontface = "bold")+
+    xlab("RDA1 - 31% of total variance, p = 0.001")+
+    ylab("RDA2 - 4% of total variance, p = 0.001")+
+    labs(color = "week", shape = "crop\nrotation")+
+    theme(legend.text = element_text(size = 12, face = "italic"))+
+    theme_minimal()
+rdaplot
+ggsave(filename = "fungi_2020_allRDA_scale2.tiff", plot = rdaplot, device = "tiff", width = 6, height = 4, units = "in")
+
+```
+
+
+
+# Sample type RDA
+```{r}
+bulk <- comm_subset(comm, samples, samp_type = "bulk")
+bulksamp <- sample_subset(samples, samp_type = "bulk")
+
+bulkclr <- decostand(bulk+1, method = "clr")
+typerda <- rda(bulkclr ~ week + rotation, data = bulksamp)
+typerda
+
+
+bag <- comm_subset(comm, samples, samp_type = "bag")
+bagsamp <- sample_subset(samples, samp_type = "bag")
+
+bagclr <- decostand(bag+1, method = "clr")
+typerda <- rda(bagclr ~ week + rotation, data = bagsamp)
+
+typerda
+summary(typerda)
+anova(typerda, by = "margin")
+anova(typerda, by = "axis")
+
+# get taxa to plot
+source("r scripts/RDA outlier functions.R")
+adaptive <- rdadapt(typerda, 2) # finds taxa that contribute most to each axis, returns a list of pvalues
+
+# get taxa that contribute most to each axis
+taxadf <- scores(typerda, scaling = 2)$species
+taxadf <- cbind(taxadf, adaptive)
+taxadf$spplabels <- sapply(strsplit(rownames(taxadf), "_"), "[[", 1)
+# filter to just smallest qvalues
+taxadf.filt <- taxadf[order(taxadf$q.values),]
+taxadf.filt <- taxadf.filt[1:20,]
+
+typerdaplot <- ggplot()+
+    geom_point(aes(scores(typerda, scaling = 2)$sites[,1], # site points
+                   scores(typerda, scaling = 2)$sites[,2], 
+                   shape = bagsamp$rotation, 
+                   color = as.factor(bagsamp$week)), 
+               size = 4)+
+    geom_point(aes(scores(typerda, scaling = 2)$species[,1], # species points
+                     scores(typerda, scaling = 2)$species[,2]), 
+                 alpha = 1/10, color = "gray25", size = 1)+
+    geom_text_repel(aes(x = taxadf.filt[ ,1], # species labels
+                  y = taxadf.filt[ ,2],
+                  label = taxadf.filt$spplabels),max.overlaps = 25,
+              size = 3, color = "gray25", fontface="italic")+
+    geom_text(aes(x = scores(typerda, scaling = 2)$centroids[ ,1], # centroid labels
+                  y = scores(typerda, scaling = 2)$centroids[ ,2],
+                  label = c("CS", "CSSwP")),
+              size = 4, fontface = "bold")+
+    xlab("RDA1 - 10% of total variance, p = 0.001")+
+    ylab("RDA2 - 7% of total variance, p = 0.001")+
+    labs(color = "week", shape = "crop\nrotation")+
+    theme(legend.text = element_text(size = 12, face = "italic"))+
+    theme_minimal()
+typerdaplot
+ggsave(filename = "fungi_2020_bagRDA_scale2.tiff", plot = typerdaplot, device = "tiff", width = 7, height = 5, units = "in")
+
+```
+
+
+
+guild diversity in cropping systems
+```{r}
+bagdiv <- calculate_diversity(comm_subset(traitcomm, samples, "bag"), sample_subset(samples, "bag"))
+
+bulkdiv <- calculate_diversity(comm_subset(traitcomm, samples, "bulk"), sample_subset(samples, "bulk"))
+
+ggplot(bulkdiv)+
+  geom_point(aes(x = week_int, y = rar.hillq1, color = rotation), size = 2)+
+  theme_minimal()+
+  scale_color_manual(values = c("skyblue", "hotpink"))+
+  labs(y = "DNA concentration (ng.uL)", x = "week sampled",title = "bulk soil")
+  stat_smooth(aes(x = week_int, y = rar.hillq1), method="lm", se=TRUE, fill=NA,
+              formula=y ~ x ,colour="gray")
+  
+ggplot(bagdiv)+
+  geom_point(aes(x = week_int, y = rar.hillq1, color = rotation), size = 3)+
+  theme_minimal()+
+  scale_color_manual(values = c("skyblue", "hotpink"))+
+  labs(y = "DNA concentration (ng.uL)",x = "week sampled", title = "bag soil")
+  stat_smooth(aes(x = week_int, y = DNA_ng.ul), method="lm", se=TRUE, fill=NA,
+              formula=y ~ exp(-x), colour="gray")
+  
+t.test(bagdiv$rar.alpha ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.hillq1 ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.shannon ~ as.numeric(as.factor(bagdiv$rotation)))
+
+t.test(bulkdiv$rar.alpha ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.hillq1 ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.shannon ~ as.numeric(as.factor(bulkdiv$rotation)))
+
+```

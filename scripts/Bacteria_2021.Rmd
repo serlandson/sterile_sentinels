@@ -1,0 +1,482 @@
+---
+title: "Bacteria 2021 Sterile Sentinels"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, )
+knitr::opts_knit$set(root.dir = "/Users/sonya.erlandson/OneDrive - USDA/files to save/sterile sentinels/sr analysis")
+```
+
+## Load data
+```{r}
+comm <- read.csv("data tables/emu_16S_counts_2021.csv", header = TRUE, row.names = 1, check.names = F)
+tax <- read.csv("data tables/emu_16S_taxonomy_2021.csv")
+samples <- read.csv("data tables/16S_sample_data_2021_subset.csv")
+taxtrait <- read.table("data tables/16s_taxonomy_with_traits_2021.tsv", sep = "\t", header = TRUE)
+fapro <- read.table("FAPROTAX_DONE/functional_table_2021.tsv", sep = "\t", header = TRUE, row.names = 1)
+leco <- readxl::read_xlsx("data tables/Alt Rotation Sentinel Soil 2020-2022.xlsx")
+
+leco <- leco[leco$Year ==2021, ]
+```
+
+# Load R libraries and custom functions
+```{r}
+library(vegan)
+library(tidyverse)
+library(knitr)
+library(ALDEx2)
+
+
+source("r scripts/subset_samples_community_table.R")
+source("r scripts/permANOVA_functions.R")
+
+aggregateTaxonomy <- function(community, taxonomy, agglevel){
+  commtranspose <- as.data.frame(t(community))
+  whichlevel <- which(colnames(tax) == agglevel)
+  commagg <- aggregate(commtranspose, by = list(tax[, whichlevel]), FUN = sum)
+  # rowSums(commagg[,-1])
+  # commagg <- commagg[-1, ]
+  row.names(commagg) <- commagg$Group.1 # new row names of genera
+  commagg <- commagg[, -1] # remove grouping variable
+  commagg <- as.data.frame(t(commagg))
+}
+
+#subset community, samples, taxonomy. need subset r script
+rotation_ttests <- function(comm, samples, type=NULL, time=NULL, test_name){
+  test <- comm_subset(comm, samples, type, time) # subset community
+  testsamp <- sample_subset(samples, type, time) # subset samples
+  # aldex t-test
+  aldextest <- ALDEx2::aldex(reads = t(test), conditions = testsamp$rotation, test = "t", effect = TRUE, mc.samples = 128)
+  # add sample data and test information
+  aldextest$type <- rep(test_name, length(aldextest$rab.all))
+  aldextest$species <- row.names(aldextest)
+  return(aldextest)
+  
+}
+
+type_ttest <- function(comm, samples, time=NULL, test_name){
+  test <- comm_subset(comm, samples, which_time =  time) # subset community
+  testsamp <- sample_subset(samples,  which_time = time) # subset samples
+  # aldex t-test
+  aldextest <- ALDEx2::aldex(reads = t(test), conditions = testsamp$type, test = "t", effect = TRUE, mc.samples = 128)
+  # add sample data and test information
+  aldextest$type <- rep(test_name, length(aldextest$rab.all))
+  aldextest$species <- row.names(aldextest)
+  return(aldextest)
+  
+}
+
+```
+
+
+#Soil chemistry and nutrients
+permanova? 
+WOULD be better to combine 2020 and 2021 for this analysis.
+```{r}
+# need to aggregate community or expand soil data
+bulk <- comm_subset(comm, samples, "bulk")
+bulksamp <- sample_subset(samples, "bulk")
+
+bulk <- bulk[order(bulksamp$plot), ]
+bulksamp <- bulksamp[order(bulksamp$plot), ]
+
+bulk0 <- bulk[bulksamp$time==0, ]
+
+lecorep <- leco[match(bulksamp$plot, leco$Plot), ]
+
+# need to standardize the soil variables.
+lecostd <- leco[ -4,c(7,8,11:18)] # missig 220
+lecostd <- data.frame(scale(lecostd))
+
+soilpermanova <- adonis2(decostand(bulk0+1, method = "clr")~PctN+PctC+pH+SWC_g.drygsoil+NH4N_mg.kg+P.Bray_mg.kg, data=lecostd, method = "euclid", by = "margin")
+
+soilpermanova
+
+
+soilrda <- rda(decostand(bulk0+1, method = "clr")~PctN+PctC+pH+SWC_g.drygsoil+NH4N_mg.kg+P.Bray_mg.kg, data=lecostd, method = "euclid")
+plot(soilrda)
+anova(soilrda)
+
+
+soilmoisturerda <- adonis2(decostand(comm+1, method = "clr")~samples$percent_wc+samples$type +samples$rotation, method = "euclid")
+soilmoisturerda
+```
+
+# Statistical power
+adonis r2 - cropping system at each time point
+power of sentinels vs bulk and incubation time will be determined in another script with all four datasets
+```{r, echo=FALSE}
+bulkanova <- adonis2(decostand(comm_subset(comm+1, samples, "bulk"), method = "clr") ~ week + rotation, data = sample_subset(samples, "bulk"), method = "euclid", by = "terms")
+
+baganova <- adonis2(decostand(comm_subset(comm+1, samples, "bag"), method = "clr")  ~ week + rotation, data = sample_subset(samples, "bag"), method = "euclid", by = "terms")
+
+# for each time point:
+bulkpermanovas <- bulkANOVAs(comm, samples)
+bagpermanovas <- bagANOVAs(comm, samples)
+
+allpermanovas <- rbind(bulkpermanovas, bagpermanovas)
+
+write.csv(allpermanovas, "bacteria_2021_adonis_results.csv")
+```
+
+total dna, will be determined in another script with all four datasets
+diversity too.
+#Differential Abundance
+###sentinels vs bulk soil
+```{r, message=F, include=F}
+allweeks <- rbind(type_ttest(comm, samples, time = 1, "week_1"),
+                  type_ttest(comm, samples, time = 2, "week_2"),
+                  type_ttest(comm, samples, time = 3, "week_3"),
+                  type_ttest(comm, samples, time = 4, "week_4"),
+                  type_ttest(comm, samples, time = 5, "week_5"))
+
+
+allweeks$amplicon <- rep ("bacteria_2021", length(allweeks$rab.all))
+
+
+```
+
+
+##cropping system
+####sentinels
+```{r, message=F, include=F}
+# aggregate taxonomic level
+summary(colnames(comm) == tax$taxon_name_sh)
+genuscomm <- aggregateTaxonomy(comm, tax, "genus")
+
+bag <- rbind(rotation_ttests(comm, samples, type = "bag", time = 1, "bag_1"),
+              rotation_ttests(comm, samples, type = "bag", time = 2, "bag_2"),
+              rotation_ttests(comm, samples, type = "bag", time = 3, "bag_3"),
+              rotation_ttests(comm, samples, type = "bag", time = 4, "bag_4"),
+              rotation_ttests(comm, samples, type = "bag", time = 5, "bag_5"))
+
+
+genusbag <- rbind(rotation_ttests(genuscomm, samples, type = "bag", time = 1, "bag_1"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 2, "bag_2"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 3, "bag_3"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 4, "bag_4"),
+              rotation_ttests(genuscomm, samples, type = "bag", time = 5, "bag_5"))
+
+
+```
+
+###bulk soil
+```{r, echo=FALSE,message=F, include=F}
+
+bulk <- rbind(rotation_ttests(comm, samples, type = "bulk", time = 0, "bulk_0"),
+              rotation_ttests(comm, samples, type = "bulk", time = 1, "bulk_1"),
+              rotation_ttests(comm, samples, type = "bulk", time = 2, "bulk_2"),
+              rotation_ttests(comm, samples, type = "bulk", time = 3, "bulk_3"),
+              rotation_ttests(comm, samples, type = "bulk", time = 4, "bulk_4"),
+              rotation_ttests(comm, samples, type = "bulk", time = 5, "bulk_5"))
+
+
+genusbulk <- rbind(rotation_ttests(genuscomm, samples, type = "bulk", time = 0, "bulk_0"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 1, "bulk_1"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 2, "bulk_2"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 3, "bulk_3"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 4, "bulk_4"),
+              rotation_ttests(genuscomm, samples, type = "bulk", time = 5, "bulk_5"))
+
+
+```
+
+# diff abund summary
+```{r}
+rotationtests <- rbind(bag,bulk)
+rotationfilt <- rotationtests[abs(rotationtests$effect)>1, ]
+length(unique(rotationfilt$species))
+
+genusrotationtests <- rbind(genusbag,genusbulk)
+traittests <- rbind(bag.traits, bulk.traits)
+# assign guilds
+rotationfilt$primary_lifestyle <- tax$primary_lifestyle[match(rotationfilt$species, tax$taxon_name_sh)]
+rotationfilt$secondary_lifestyle <- tax$secondary_lifestyle[match(rotationfilt$species, tax$taxon_name_sh)]
+
+cstaxa <- rotationfilt[rotationfilt$effect < 0, ]
+csswptaxa <- rotationfilt[rotationfilt$effect > 0, ]
+
+
+bagtraits <- allweeks.traits[allweeks.traits$effect<-1, ]
+bulktraits <- allweeks.traits[allweeks.traits$effect>1, ]
+
+write.csv(rotationtests, "bacteria_2021_rotation_ttests_species.csv", quote = F)
+write.csv(genusrotationtests, "bacteria_2021_rotation_ttests_genus.csv", quote = F)
+write.csv(allweeks, "bacteria_2021_type_ttests_species.csv", quote = F)
+#write.csv(allweeks.traits, "bacteria_2021_type_traits.csv", quote = F)
+#write.csv(traittests, "bacteria_2021_rotation_traits.csv", quote = F)
+```
+
+#Diversity and Richness
+```{r}
+library(hillR)
+#stats
+summary(row.names(comm)==samples$fungi_barcode)
+samples$week_int <- samples$week
+samples$lib_size <- rowSums(comm)
+
+calculate_diversity <- function(comm, samples){
+  shannon <- diversity(comm, "shannon")
+  hillq0 <- hill_taxa(comm, q=0, MARGIN = 1)
+  # get rarefied estimates
+  rar <- rrarefy(comm, sample = min(rowSums(comm)))
+  rar.alpha <- specnumber(rar)
+  rar.shannon <- diversity(rar, "shannon")
+  rar.hillq0 <- hill_taxa(rar, q=0, MARGIN = 1)
+  rar.hillq1 <- hill_taxa(rar, q=1, MARGIN = 1)
+  rar.hillq2 <- hill_taxa(rar, q=2, MARGIN = 1)
+  #add to sample data
+  samples$shannon <- shannon
+  samples$hill <- hillq0
+  samples$rar.alpha <- rar.alpha
+  samples$rar.shannon <- rar.shannon
+  samples$rar.hillq0 <- rar.hillq0
+  samples$rar.hillq1 <- rar.hillq1
+  samples$rar.hillq2 <- rar.hillq2
+  return(samples)
+}
+
+div.df <- calculate_diversity(comm, samples)
+
+bagdiv <- div.df[div.df$type == "bag", ]
+bulkdiv <- div.df[div.df$type == "bulk", ]
+
+weeksubset0 <- bulkdiv[bulkdiv$time == 0, ]
+t.test(rar.hillq1 ~ rotation, data = weeksubset0)
+# no sig diff for bulk 0
+alphadivtests <- list()
+for(t in 1:5){
+  print(paste("testing week", t))
+  weeksubset <- bagdiv[bagdiv$time == t, ]
+  test.res <- t.test(rar.hillq1 ~ rotation, data = weeksubset)
+  alphadivtests[[t]] <- test.res
+}
+
+alphadivtests[[1]]
+alphadivtests[[2]]
+alphadivtests[[3]]
+alphadivtests[[4]]
+alphadivtests[[5]]
+
+
+#!! warning !!! no longer matches up with community table
+bagdiv <- bagdiv[order(bagdiv$plot), ]
+bulkdiv <- bulkdiv[order(bulkdiv$plot), ]
+
+ggplot(bulkdiv)+
+  geom_point(aes(x = week_int, y = lib_size, color = rotation), size = 2)+
+  theme_minimal()+
+  scale_color_manual(values = c("skyblue", "hotpink"))+
+  labs(y = "DNA concentration (ng.uL)", x = "week sampled",title = "bulk soil")
+  stat_smooth(aes(x = week_int, y = rar.hillq1), method="lm", se=TRUE, fill=NA,
+              formula=y ~ x ,colour="gray")
+  
+ggplot(bagdiv)+
+  geom_point(aes(x = week_int, y = lib_size, color = rotation), size = 3)+
+  theme_minimal()+
+  scale_color_manual(values = c("skyblue", "hotpink"))+
+  labs(y = "DNA concentration (ng.uL)",x = "week sampled", title = "bag soil")+
+  stat_smooth(aes(x = week_int, y = DNA_ng.ul), method="lm", se=TRUE, fill=NA,
+              formula=y ~ exp(-x), colour="gray")
+
+
+t.test(bagdiv$rar.alpha ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.hillq1 ~ as.numeric(as.factor(bagdiv$rotation)))
+t.test(bagdiv$rar.shannon ~ as.numeric(as.factor(bagdiv$rotation)))
+
+t.test(bulkdiv$rar.alpha ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.hillq1 ~ as.numeric(as.factor(bulkdiv$rotation)))
+t.test(bulkdiv$rar.shannon ~ as.numeric(as.factor(bulkdiv$rotation)))
+
+
+
+mean(bagdiv$rar.alpha[bagdiv$rotation == "CS"])
+mean(bagdiv$rar.alpha[bagdiv$rotation == "CSSwP"])
+
+sd(bagdiv$rar.alpha[bagdiv$rotation == "CS"])
+sd(bagdiv$rar.alpha[bagdiv$rotation == "CSSwP"])
+
+mean(bagdiv$rar.hillq1[bagdiv$rotation == "CS"])
+mean(bagdiv$rar.hillq1[bagdiv$rotation == "CSSwP"])
+
+sd(bagdiv$rar.hillq1[bagdiv$rotation == "CS"])
+sd(bagdiv$rar.hillq1[bagdiv$rotation == "CSSwP"])
+
+#####################################
+
+mean(bulkdiv$rar.alpha[bulkdiv$rotation == "CS"])
+mean(bulkdiv$rar.alpha[bulkdiv$rotation == "CSSwP"])
+
+sd(bulkdiv$rar.alpha[bulkdiv$rotation == "CS"])
+sd(bulkdiv$rar.alpha[bulkdiv$rotation == "CSSwP"])
+
+
+mean(bulkdiv$rar.hillq1[bulkdiv$rotation == "CS"])
+mean(bulkdiv$rar.hillq1[bulkdiv$rotation == "CSSwP"])
+
+sd(bulkdiv$rar.hillq1[bulkdiv$rotation == "CS"])
+sd(bulkdiv$rar.hillq1[bulkdiv$rotation == "CSSwP"])
+
+```
+
+
+# Overall RDA
+```{r}
+commclr <- decostand(comm+1, method = "clr")
+allrda <- rda(commclr ~ type + week + rotation, data = samples)
+allrda
+summary(allrda)
+anova(allrda, by = "terms")
+anova(allrda, by = "axis")
+
+source("r scripts/RDA outlier functions.R")
+adaptive <- rdadapt(allrda, 3) # finds taxa that contribute most to each axis, returns a list of pvalues
+
+# get taxa that contribute most to each axis
+taxadf <- scores(allrda, scaling = 2)$species
+taxadf <- cbind(taxadf, adaptive)
+taxadf$spplabels <- sapply(strsplit(rownames(taxadf), " "), "[[", 1)
+# filter to just smallest qvalues
+taxadf.filt <- taxadf[order(taxadf$q.values),]
+taxadf.filt <- taxadf.filt[1:20,]
+
+
+rdaplot <- ggplot()+
+    # site scores
+    geom_point(aes(scores(allrda, scaling = 2)$sites[,1], 
+                   scores(allrda, scaling = 2)$sites[,2], 
+                   shape = samples$rotation, 
+                   color = as.factor(samples$week)), 
+               size = 4)+
+  # specis scores  
+  # geom_point(aes(scores(allrda, scaling = 2)$species[,1], 
+  #                    scores(allrda, scaling = 2)$species[,2]), 
+  #                alpha = 1/10, color = "gray25", size = 1)+
+  # species labels
+    # geom_text_repel(aes(x = taxadf.filt[ ,1],
+    #               y = taxadf.filt[ ,2],
+    #               label =taxadf.filt$spplabels), max.overlaps = 30,
+    #           size = 3, color = "gray25", fontface = "italic")+
+    geom_text(aes(x = scores(allrda, scaling = 2)$centroids[ ,1]-0.3,
+                  y = scores(allrda, scaling = 2)$centroids[ ,2],
+                  label = c("sentinel", "bulk", "CS", "CSSwP")), check_overlap = FALSE,
+              size = 4, fontface = "bold")+
+    xlab("RDA1 - 53% of total variance, p = 0.001")+
+    ylab("RDA2 - 3.2% of total variance, p = 0.001")+
+    labs(color = "week", shape = "crop\nrotation")+
+    theme(legend.text = element_text(size = 12, face = "italic"))+
+    theme_minimal()
+rdaplot
+
+ggsave(filename = "bac_2021_allRDA_scale2.tiff", plot = rdaplot, device = "tiff", width = 6, height = 4, units = "in")
+```
+
+
+# Sample Type RDAs
+```{r}
+bulk <- comm_subset(comm, samples, "bulk")
+bulksamp <- sample_subset(samples, "bulk")
+
+bulkclr <- decostand(bulk+1, method = "clr")
+bulkrda <- rda(bulkclr ~  week + rotation, data = bulksamp)
+bulkrda
+summary(bulkrda)
+anova(bulkrda, by = "terms")
+anova(bulkrda, by = "axis")
+
+source("r scripts/RDA outlier functions.R")
+adaptive <- rdadapt(bulkrda, 2) # finds taxa that contribute most to each axis, returns a list of pvalues
+
+# get taxa that contribute most to each axis
+taxadf <- scores(bulkrda, scaling = 2)$species
+taxadf <- cbind(taxadf, adaptive)
+taxadf$spplabels <- sapply(strsplit(rownames(taxadf), " "), "[[", 1)
+# filter to just smallest qvalues
+taxadf.filt <- taxadf[order(taxadf$q.values),]
+taxadf.filt <- taxadf.filt[1:20,]
+
+
+bulkrdaplot <- ggplot()+
+    # site scores
+    geom_point(aes(scores(bulkrda, scaling = 2)$sites[,1], 
+                   scores(bulkrda, scaling = 2)$sites[,2], 
+                   shape = bulksamp$rotation, 
+                   color = as.factor(bulksamp$week)), 
+               size = 4)+
+  # species scores  
+  geom_point(aes(scores(bulkrda, scaling = 2)$species[,1], 
+                     scores(bulkrda, scaling = 2)$species[,2]), 
+                 alpha = 1/10, color = "gray25", size = 1)+
+  # species labels
+    geom_text_repel(aes(x = taxadf.filt[ ,1],
+                  y = taxadf.filt[ ,2],
+                  label =taxadf.filt$spplabels), max.overlaps = 40,
+              size = 3, color = "gray25", fontface = "italic")+
+    geom_text(aes(x = scores(bulkrda, scaling = 2)$centroids[ ,1],
+                  y = scores(bulkrda, scaling = 2)$centroids[ ,2],
+                  label = c("CS", "CSSwP")), check_overlap = FALSE,
+              size = 4, fontface = "bold")+
+    xlab("RDA1 - 4.6% of total variance, p = 0.001")+
+    ylab("RDA2 - 2.2% of total variance, p > 0.05")+
+    labs(color = "week", shape = "crop\nrotation")+
+    theme(legend.text = element_text(size = 12, face = "italic"))+
+    theme_minimal()
+bulkrdaplot
+
+ggsave(filename = "bac_2021_bulkrda_scale2.tiff", plot = bulkrdaplot, device = "tiff", width = 6, height = 4, units = "in")
+
+
+######################################
+
+bag <- comm_subset(comm, samples, "bag")
+bagsamp <- sample_subset(samples, "bag")
+
+bagclr <- decostand(bag+1, method = "clr")
+bagrda <- rda(bagclr ~  week + rotation, data = bagsamp)
+bagrda
+summary(bagrda)
+anova(bagrda, by = "terms")
+anova(bagrda, by = "axis")
+
+source("r scripts/RDA outlier functions.R")
+adaptive <- rdadapt(bagrda, 2) # finds taxa that contribute most to each axis, returns a list of pvalues
+
+# get taxa that contribute most to each axis
+taxadf <- scores(bagrda, scaling = 2)$species
+taxadf <- cbind(taxadf, adaptive)
+taxadf$spplabels <- sapply(strsplit(rownames(taxadf), " "), "[[", 1)
+# filter to just smallest qvalues
+taxadf.filt <- taxadf[order(taxadf$q.values),]
+taxadf.filt <- taxadf.filt[1:20,]
+
+
+bagrdaplot <- ggplot()+
+    # site scores
+    geom_point(aes(scores(bagrda, scaling = 2)$sites[,1], 
+                   scores(bagrda, scaling = 2)$sites[,2], 
+                   shape = bagsamp$rotation, 
+                   color = as.factor(bagsamp$week)), 
+               size = 4)+
+  # species scores  
+  geom_point(aes(scores(bagrda, scaling = 2)$species[,1], 
+                     scores(bagrda, scaling = 2)$species[,2]), 
+                 alpha = 1/10, color = "gray25", size = 1)+
+  # species labels
+    geom_text_repel(aes(x = taxadf.filt[ ,1],
+                  y = taxadf.filt[ ,2],
+                  label =taxadf.filt$spplabels), max.overlaps = 40,
+              size = 3, color = "gray25", fontface = "italic")+
+    geom_text(aes(x = scores(bagrda, scaling = 2)$centroids[ ,1],
+                  y = scores(bagrda, scaling = 2)$centroids[ ,2],
+                  label = c("CS", "CSSwP")), check_overlap = FALSE,
+              size = 4, fontface = "bold")+
+    xlab("RDA1 - 24% of total variance, p = 0.001")+
+    ylab("RDA2 - 4.6% of total variance, p = 0.001")+
+    labs(color = "week", shape = "crop\nrotation")+
+    theme(legend.text = element_text(size = 12, face = "italic"))+
+    theme_minimal()
+bagrdaplot
+
+ggsave(filename = "bac_2021_bagrda_scale2.tiff", plot = bagrdaplot, device = "tiff", width = 6, height = 4, units = "in")
+```

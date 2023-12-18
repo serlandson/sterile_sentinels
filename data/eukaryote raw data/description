@@ -1,0 +1,1 @@
+read count tables and taxonomy from minimap. See eukaryotes minion script for details about construction. These data tables were preprocessed with the R script before data analysis.
